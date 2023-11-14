@@ -28,7 +28,7 @@ export default {
   methods: {
     Login() {
       this.$router.push({
-        path: "/mainpage",
+        path: "/DetailComponent1Update",
       });
     },
   },
