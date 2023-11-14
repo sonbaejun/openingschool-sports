@@ -302,7 +302,7 @@
 </template>
   
   <script>
-import dataSet from "../data.js";
+import dataSet from "../assets/data.js";
 export default {
   data() {
     return {

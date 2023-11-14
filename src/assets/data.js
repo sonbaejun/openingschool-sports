@@ -1,4 +1,4 @@
-[
+let data = [
   {
     base_year: "2017",
     alsfc_ctprvn_nm: "울산광역시",
@@ -17459,3 +17459,5 @@
     lockerrm_co: "0",
   },
 ];
+
+export default data;
