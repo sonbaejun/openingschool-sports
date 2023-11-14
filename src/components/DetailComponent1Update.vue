@@ -12,7 +12,7 @@
     >
       <!-- grid1 시작지점 -->
       <v-row>
-        <v-col cols="12" sm="3">
+        <v-col cols="12" sm="4">
           <div
             style="
               display: flex;
@@ -31,15 +31,16 @@
               "
               tile
             >
-              <v-list dense style="padding: 0">
-                <v-icon color="indigo darken-4" large>
-                  mdi-arrow-down-box
-                </v-icon>
+              <div>
+                <v-icon color="indigo darken-4" large> mdi-town-hall </v-icon>
                 <v-subheader style="color: black; margin-left: 20px"
-                  >PLAN</v-subheader
+                  >개방학교 검색</v-subheader
                 >
-                <div v-for="(rs, i) in planner.planList" :key="i">
-                  <v-list-item v-if="checkDay(rs)">
+                <button style="background-color: red">학교조건검색</button>
+              </div>
+              <v-list dense style="padding: 0">
+                <div v-for="(rs, i) in initSchoolData" :key="i">
+                  <v-list-item>
                     <v-list-item-content>
                       <v-card elevation="5" outlined style="margin: 2px 0">
                         <div
@@ -60,8 +61,8 @@
                               cursor: pointer;
                               color: black;
                             "
-                            @click="setCenter(rs)"
-                            >{{ rs.name }}</v-list-item-title
+                            @click="setCenter2(rs)"
+                            >{{ rs.schul_nm }}</v-list-item-title
                           >
                           <v-btn
                             style="
@@ -76,52 +77,9 @@
                             </v-icon></v-btn
                           >
                         </div>
-                        <v-menu
-                          ref="menu"
-                          :close-on-content-click="false"
-                          :nudge-right="40"
-                          transition="scale-transition"
-                          offset-y
-                          max-width="290px"
-                          min-width="290px"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              solo
-                              v-bind:value="getOrderDate(i)"
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                              @click="timepicker = i"
-                              style="font-size: small; height: 45px"
-                            ></v-text-field>
-                          </template>
-                          <div v-if="timepicker == i">
-                            <v-time-picker
-                              v-model="timepickerTime"
-                              full-width
-                            ></v-time-picker>
-                            <v-btn
-                              @click="doneTimePicker(rs)"
-                              style="
-                                background-color: #1bc6ec;
-                                width: 100%;
-                                color: white;
-                                font-family: 'Inter';
-                                font-style: normal;
-                                font-weight: 700;
-                                border-radius: 4px;
-                              "
-                              >done</v-btn
-                            >
-                          </div>
-                        </v-menu>
-                        <v-text-field
-                          label="메모"
-                          solo
-                          v-model="rs.memo"
-                          style="font-size: small; height: 45px"
-                        ></v-text-field>
+                        <div style="font-size: small; height: 23px">
+                          {{ rs.alsfc_addr }}
+                        </div>
                       </v-card>
                     </v-list-item-content>
                   </v-list-item>
@@ -130,10 +88,10 @@
             </v-card>
           </div>
         </v-col>
-        <v-col cols="12" sm="9" style="max-width: 100%">
+        <v-col cols="12" sm="8" style="max-width: 100%">
           <!-- grid1 종료지점 -->
           <!-- grid2 시작지점 -->
-          <v-card
+          <!-- <v-card
             v-if="showSearch == true"
             class="mx-auto"
             style="
@@ -221,13 +179,11 @@
                 </v-list-item>
               </div>
             </v-list>
-          </v-card>
+          </v-card> -->
           <div class="maparea">
             <div class="categoryList">
               <div class="categoryElement" @click="changeCartegory('AT4')">
-                <v-icon color="indigo darken-4" large>
-                  mdi-arrow-down-box
-                </v-icon>
+                <v-icon color="indigo darken-4" large> mdi-bank </v-icon>
                 <span style="color: black">관광지</span>
               </div>
               <div class="categoryElement" @click="changeCartegory('PK6')">
@@ -359,6 +315,8 @@ export default {
       startDatePicker: 0,
       endDatePicker: 0,
       time: null,
+      schoolData: dataSet,
+      initSchoolData: [],
       timepicker: null,
       timepickerTime: "00:00",
       showDialog: false,
@@ -409,7 +367,10 @@ export default {
   },
   watch: {},
   mounted() {
-    console.log(dataSet);
+    for (let i = 0; i < 30; i++) {
+      this.initSchoolData.push(this.schoolData[i]);
+    }
+    console.log(this.initSchoolData);
     if (window.kakao && window.kakao.maps) {
       // 카카오 객체가 있고, 카카오 맵 그릴 준비가 되어 있다면 맵 실행
       this.loadMap();
@@ -436,6 +397,30 @@ export default {
     window.addEventListener("resize", this.handleResize);
   },
   methods: {
+    setCenter2(rs) {
+      console.log(rs);
+      var geocoder = new window.kakao.maps.services.Geocoder();
+      geocoder.addressSearch(rs.alsfc_addr, (result, status) => {
+        console.log(result);
+        // 정상적으로 검색이 완료됐으면
+        if (status === window.kakao.maps.services.Status.OK) {
+          var coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+          this.map.setCenter(coords);
+
+          // 결과값으로 받은 위치를 마커로 표시합니다
+          var marker = new window.kakao.maps.Marker({
+            map: this.map,
+            position: coords,
+          });
+
+          // 인포윈도우로 장소에 대한 설명을 표시합니다
+          var infowindow = new window.kakao.maps.InfoWindow({
+            content: `<div style="width:150px;text-align:center;padding:6px 0;">${rs.schul_nm}</div>`,
+          });
+          infowindow.open(this.map, marker);
+        }
+      });
+    },
     loadScript() {
       const script = document.createElement("script");
       script.src =
@@ -556,7 +541,6 @@ export default {
             imageSrc,
             imageSize
           );
-
           var iwContent = '<div style="padding:5px;">hello world</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
             iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
 
@@ -708,7 +692,7 @@ export default {
   border: none;
   background: #7c30f5e6;
   color: white;
-  width: 1vw;
+  width: 2vw;
   height: 1vw;
   -webkit-box-pack: center;
   justify-content: center;
@@ -721,7 +705,7 @@ export default {
 }
 .planNumber h4 {
   margin: 0;
-  font-size: 12px;
+  font-size: 8px;
   line-height: 1vw;
   text-align: center;
   width: 1vw;
