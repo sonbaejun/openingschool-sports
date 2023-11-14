@@ -1,407 +1,1198 @@
 <template>
-<div class="mainFrame">
-    <div class="black-bg" v-if="engDate == 1">
-        <div class="white-bg">
-            <VDatePicker v-model="date" mode="date" @click="engAdmissionDateSet(date)" />
-        </div>
+  <div style="margin-top: 60px">
+    <div class="text-center" style="z-index: 1000000; background-color: white">
+      <v-row justify="center">
+        <v-dialog v-model="showDialog" scrollable width="auto">
+          <v-card>
+            <v-card-title>여행테마 선택</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 300px">
+              <div
+                v-for="item in conceptList"
+                :key="item.value"
+                style="margin: 4px 7px 0px 7px"
+              >
+                <input
+                  type="radio"
+                  :id="item.key"
+                  v-model="planner.concept"
+                  style="width: auto; margin: 10px 0px"
+                  :value="item.value"
+                />
+                <label
+                  :for="item.key"
+                  class="text"
+                  style="font-size: medium; font-weight: 600"
+                  >{{ item.value }}</label
+                >
+              </div>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="showDialog = false"
+              >
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
     </div>
-    <div class="black-bg" v-if="mathDate == 1">
-        <div class="white-bg">
-            <VDatePicker v-model="date" mode="date" @click="mathAdmissionDateSet(date)" />
-        </div>
+    <div class="text-center" style="z-index: 1000000; background-color: white">
+      <v-row justify="center">
+        <v-dialog v-model="showSelected" scrollable width="auto">
+          <v-card>
+            <v-card-title>여행장소 선택</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 300px; width: 600px">
+              <div
+                v-for="(item, index) in placeSelect"
+                :key="index"
+                style="margin: 4px 7px 0px 7px"
+              >
+                <input
+                  type="checkbox"
+                  :id="item"
+                  v-model="place"
+                  style="width: auto; margin: 10px 0px"
+                  :value="item"
+                />
+                <label
+                  :for="item"
+                  class="text"
+                  style="font-size: medium; font-weight: 600"
+                  >{{ item }}</label
+                >
+              </div>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="showSelected = false"
+              >
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
     </div>
-    <div class="detailView1">
+    <v-row
+      justify="center"
+      class="black-bg"
+      v-if="startDatePicker == 1"
+      style="z-index: 1000000; height: 100px; background-color: transparent"
+    >
+      <v-date-picker v-model="start_date">
+        <v-btn
+          @click="startDatePicker = 0"
+          style="
+            background-color: #1bc6ec;
+            width: 98%;
+            color: white;
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            border-radius: 4px;
+          "
+          >done</v-btn
+        >
+      </v-date-picker>
+    </v-row>
+    <v-row
+      justify="center"
+      class="black-bg"
+      v-if="endDatePicker == 1"
+      style="z-index: 1000000; height: 100px; background-color: transparent"
+    >
+      <v-date-picker v-model="end_date">
+        <v-btn
+          @click="endDatePicker = 0"
+          style="
+            background-color: #1bc6ec;
+            width: 98%;
+            color: white;
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            border-radius: 4px;
+          "
+          >done</v-btn
+        >
+      </v-date-picker>
+    </v-row>
+    <div class="black-bg" v-if="modal == 1">
+      <div class="white-bg" style="margin: 100px 530px; width: fit-content">
         <div>
-            <h4>1. 첫레벨</h4>
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <td>영어 입학일</td>
-                        <td>영어 입학레벨</td>
-                        <td>수학 입학일</td>
-                        <td>수학 입학레벨</td>
-                    </tr>
-                    <tr>
-                        <td><input readonly @click="engDate = 1" v-model="engAdmissionDate" placeholder="📅"></td>
-                        <td><input></td>
-                        <td><input readonly @click="mathDate = 1" v-model="mathAdmissionDate" placeholder="📅"></td>
-                        <td><input></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div>
-            <h4>2. 레벨테스트</h4>
-            <h5>2-1. 영어</h5>
-            <carousel :items-to-show="1">
-                <slide v-for="(url, index) in imgUrlList" :key="index">
-                    <img @click="deleteImg(index)" :src=url>
-                </slide>
-
-                <template #addons>
-                    <navigation />
-                    <pagination />
-                </template>
-            </carousel>
-            <div class="imgDiv">
-                <input @change="uploadImg" accept="image/*" type="file" id="file" />
-                <label for="file">이미지 업로드</label>
-                <h4>💡 이미지를 누르면 삭제 됩니다.</h4>
+          <v-text-field
+            label="Title"
+            hide-details="auto"
+            v-model="title"
+          ></v-text-field>
+          <v-text-field label="Intro" v-model="intro"></v-text-field>
+          <v-text-field
+            label="Start"
+            v-model="start_date"
+            style="margin-top: 0px; padding-top: 0px"
+            @click="
+              startDatePicker = 1;
+              endDatePicker = 0;
+            "
+            readonly
+          ></v-text-field>
+          <v-text-field
+            label="End"
+            v-model="end_date"
+            style="margin-top: 0px; padding-top: 0px"
+            @click="
+              endDatePicker = 1;
+              startDatePicker = 0;
+            "
+            readonly
+          ></v-text-field>
+          <v-text-field
+            label="Concept"
+            v-model="planner.concept"
+            style="margin-top: 0px; padding-top: 0px"
+            @click="
+              showDialog = true;
+              endDatePicker = 0;
+              startDatePicker = 0;
+            "
+            readonly
+          ></v-text-field>
+          <v-text-field
+            label="Place"
+            v-model="place"
+            style="margin-top: 0px; padding-top: 0px"
+            @click="showSelected = true"
+            readonly
+          ></v-text-field>
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: flex-start;
+              white-space: nowrap;
+            "
+          >
+            <div
+              v-for="(item, index) in radioList"
+              :key="index"
+              style="margin: 0px 7px 0px 7px"
+            >
+              <input
+                type="radio"
+                :id="item.key"
+                v-model="planner.visibility"
+                style="width: auto; margin: 7px 0px"
+                :value="item.value"
+              />
+              <label :for="item.key" class="text">{{ item.label }}</label>
             </div>
-            <h5>2-2. 수학</h5>
-            <carousel :items-to-show="1">
-                <slide v-for="(url, index) in imgUrlList" :key="index">
-                    <img @click="deleteImg(index)" :src=url>
-                </slide>
-
-                <template #addons>
-                    <navigation />
-                    <pagination />
-                </template>
-            </carousel>
-            <div class="imgDiv">
-                <input @change="uploadImg" accept="image/*" type="file" id="file" />
-                <label for="file">이미지 업로드</label>
-                <h4>💡 이미지를 누르면 삭제 됩니다.</h4>
-            </div>
+            <h6 style="margin-top: 5px" v-if="checkVisibility()">
+              ※공개를 선택할 경우 타인이 플래너를 조회할 수 있습니다.
+            </h6>
+          </div>
         </div>
-        <div>
-            <h4>3. 상담요약</h4>
-            <p>📌 친구들과의 관계</p>
-            <v-radio-group inline>
-                <v-radio label="좋음" value="1"></v-radio>
-                <v-radio label="보통" value="2"></v-radio>
-                <v-radio label="도움필요" value="3"></v-radio>
-            </v-radio-group>
-            <p>📌 평소 성격</p>
-            <v-radio-group inline>
-                <v-radio label="외향적" value="1"></v-radio>
-                <v-radio label="내향적" value="2"></v-radio>
-                <v-radio label="외내향적" value="3"></v-radio>
-            </v-radio-group>
-            <p>📌 부모님과의 소통</p>
-            <v-radio-group inline>
-                <v-radio label="좋음" value="1"></v-radio>
-                <v-radio label="보통" value="2"></v-radio>
-                <v-radio label="개선필요" value="3"></v-radio>
-            </v-radio-group>
-            <p>📌 집중력</p>
-            <v-radio-group inline>
-                <v-radio label="좋음" value="1"></v-radio>
-                <v-radio label="보통" value="2"></v-radio>
-                <v-radio label="도움필요" value="3"></v-radio>
-            </v-radio-group>
-            <p>📌 과제성실도</p>
-            <v-radio-group inline>
-                <v-radio label="좋음" value="1"></v-radio>
-                <v-radio label="보통" value="2"></v-radio>
-                <v-radio label="도움필요" value="3"></v-radio>
-            </v-radio-group>
-            <p>📌 요약 </p>
-            <textarea></textarea>
-        </div>
-        <div>
-            <h4>4. 신규생 체크리스트</h4>
-            <carousel :items-to-show="1">
-                <slide v-for="(url, index) in imgUrlList" :key="index">
-                    <img :src=url>
-                </slide>
-
-                <template #addons>
-                    <navigation />
-                    <pagination />
-                </template>
-            </carousel>
-            <div class="imgDiv">
-                <input @change="uploadImg" accept="image/*" type="file" id="file" />
-                <label for="file">이미지 업로드</label>
-                <h4>💡 이미지를 누르면 삭제 됩니다.</h4>
-            </div>
-        </div>
-        <div class="buttonSection">
-            <button class="cancelBtn" @click="cancelUpdate()">취소</button>
-            <button class="updateBtn" @click="updateDetail()">수정완료</button>
-        </div>
+        <v-btn
+          variant="flat"
+          style="
+            background-color: #1bc6ec;
+            width: 98%;
+            color: white;
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 700;
+            border-radius: 4px;
+          "
+          @click="doneBtn"
+        >
+          Done
+        </v-btn>
+      </div>
     </div>
-</div>
+    <div
+      style="
+        width: 95%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        margin-top: 18px;
+        margin-left: 35px;
+      "
+    >
+      <!-- grid1 시작지점 -->
+      <v-row>
+        <v-col cols="12" sm="3">
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: flex-start;
+              margin-left: 1px;
+            "
+          >
+            <v-card
+              class="mx-auto"
+              style="
+                height: 655px;
+                width: 100px;
+                margin-left: 0;
+                margin-right: 0;
+                overflow-y: auto;
+              "
+              tile
+            >
+              <v-list dense style="padding: 0">
+                <div class="searchIcon calendarIcon">
+                  <i class="fas fa-calendar"></i>
+                </div>
+                <v-subheader style="margin-left: 20px; color: black"
+                  >DAY</v-subheader
+                >
+                <v-list-item-group v-model="selectedItem" color="primary">
+                  <v-list-item v-for="(rs, i) in dateResult" :key="i">
+                    <v-list-item-content @click="showDate(rs)">
+                      <v-list-item-title>Day{{ i + 1 }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </v-card>
+            <v-card
+              class="mx-auto"
+              style="
+                height: 655px;
+                width: 100%;
+                overflow-y: auto;
+                margin-left: 5px;
+              "
+              tile
+            >
+              <v-list dense style="padding: 0">
+                <div class="searchIcon editIcon">
+                  <i class="fas fa-edit"></i>
+                </div>
+                <v-subheader style="color: black; margin-left: 20px"
+                  >PLAN</v-subheader
+                >
+                <div v-for="(rs, i) in planner.planList" :key="i">
+                  <v-list-item v-if="checkDay(rs)">
+                    <v-list-item-content>
+                      <v-card elevation="5" outlined style="margin: 2px 0">
+                        <div
+                          style="
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: flex-start;
+                            color: white;
+                          "
+                        >
+                          <div class="planNumber">
+                            <h4>{{ i + 1 }}</h4>
+                          </div>
+                          <v-list-item-title
+                            style="
+                              margin: 7px 0px 15px 9px;
+                              width: 80%;
+                              cursor: pointer;
+                              color: black;
+                            "
+                            @click="setCenter(rs)"
+                            >{{ rs.name }}</v-list-item-title
+                          >
+                          <v-btn
+                            style="
+                              width: 15%;
+                              min-width: none;
+                              padding: 0%;
+                              color: red;
+                            "
+                            @click="deletePlan(i)"
+                            ><i class="fas fa-minus-circle"></i
+                          ></v-btn>
+                        </div>
+                        <v-menu
+                          ref="menu"
+                          :close-on-content-click="false"
+                          :nudge-right="40"
+                          transition="scale-transition"
+                          offset-y
+                          max-width="290px"
+                          min-width="290px"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                              solo
+                              v-bind:value="getOrderDate(i)"
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                              @click="timepicker = i"
+                              style="font-size: small; height: 45px"
+                            ></v-text-field>
+                          </template>
+                          <div v-if="timepicker == i">
+                            <v-time-picker
+                              v-model="timepickerTime"
+                              full-width
+                            ></v-time-picker>
+                            <v-btn
+                              @click="doneTimePicker(rs)"
+                              style="
+                                background-color: #1bc6ec;
+                                width: 100%;
+                                color: white;
+                                font-family: 'Inter';
+                                font-style: normal;
+                                font-weight: 700;
+                                border-radius: 4px;
+                              "
+                              >done</v-btn
+                            >
+                          </div>
+                        </v-menu>
+                        <v-text-field
+                          label="메모"
+                          solo
+                          v-model="rs.memo"
+                          style="font-size: small; height: 45px"
+                        ></v-text-field>
+                      </v-card>
+                    </v-list-item-content>
+                  </v-list-item>
+                </div>
+              </v-list>
+            </v-card>
+          </div>
+        </v-col>
+        <v-col cols="12" sm="9" style="max-width: 100%">
+          <!-- grid1 종료지점 -->
+          <!-- grid2 시작지점 -->
+          <v-card
+            v-if="showSearch == true"
+            class="mx-auto"
+            style="
+              height: 655px;
+              width: 20%;
+              overflow-y: auto;
+              float: left;
+              min-width: 170px;
+            "
+            tile
+          >
+            <v-list dense style="padding: 0">
+              <div style="padding: 10px">
+                <div style="border: solid; border-radius: 10px">
+                  <div class="searchIcon">
+                    <i class="fas fa-search"></i>
+                  </div>
+                  <input
+                    class="searchInput"
+                    placeholder="SEARCH"
+                    @keyup.enter="searchPlaces"
+                  />
+                </div>
+              </div>
+              <div v-for="rs in search.results" :key="rs.place_name">
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-card elevation="5" outlined style="margin: 2px 0">
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: flex-start;
+                          color: black;
+                        "
+                      >
+                        <v-list-item-title
+                          style="
+                            margin: 7px 0px 15px 9px;
+                            width: 80%;
+                            cursor: pointer;
+                            font-weight: 700;
+                          "
+                          @click="setCenter(rs)"
+                          >{{ rs.place_name }}</v-list-item-title
+                        >
+                        <v-btn
+                          style="width: 10%; padding: 0%"
+                          @click="addPlan(rs)"
+                        >
+                          <i class="fas fa-plus-circle"></i>
+                        </v-btn>
+                      </div>
+                      <div class="addr" style="margin: 3px 9px">
+                        <h5
+                          style="
+                            text-overflow: ellipsis;
+                            overflow: hidden;
+                            white-space: nowrap;
+                            font-size: 10px;
+                            font-weight: 300;
+                          "
+                        >
+                          {{ rs.address_name }}
+                        </h5>
+                        <a
+                          :href="rs.place_url"
+                          target="_blank"
+                          style="
+                            text-overflow: ellipsis;
+                            overflow: hidden;
+                            white-space: nowrap;
+                            font-size: 10px;
+                            font-weight: 700;
+                            color: #1976d2a1;
+                          "
+                        >
+                          상세보기
+                        </a>
+                      </div>
+                    </v-card>
+                  </v-list-item-content>
+                </v-list-item>
+              </div>
+            </v-list>
+          </v-card>
+          <div class="maparea">
+            <div class="categoryList">
+              <div class="categoryElement" @click="changeCartegory('AT4')">
+                <i class="fas fa-archway" style="color: blue"></i>
+                <span style="color: black">관광지</span>
+              </div>
+              <div class="categoryElement" @click="changeCartegory('PK6')">
+                <i class="fas fa-car" style="color: blue"></i>
+                <span style="color: black">주차장</span>
+              </div>
+              <div class="categoryElement" @click="changeCartegory('SW8')">
+                <i class="fas fa-subway" style="color: blue"></i>
+                <span style="color: black">지하철</span>
+              </div>
+              <div class="categoryElement" @click="changeCartegory('MT1')">
+                <i class="fas fa-cart-plus" style="color: orange"></i>
+                <span style="color: black">마트</span>
+              </div>
+              <div class="categoryElement" @click="changeCartegory('FD6')">
+                <i class="fas fa-utensils" style="color: orange"></i>
+                <span style="color: black">식당</span>
+              </div>
+              <div class="categoryElement" @click="changeCartegory('AD5')">
+                <i class="fas fa-house-user" style="color: purple"></i>
+                <span style="color: black">숙소</span>
+              </div>
+              <div class="categoryElement" @click="changeCartegory('CE7')">
+                <i class="fas fa-mug-hot" style="color: brown"></i>
+                <span style="color: black">카페</span>
+              </div>
+            </div>
+            <div
+              style="
+                margin-left: auto;
+                margin-bottom: 50px;
+                padding: 0px 12px;
+                position: absolute;
+                z-index: 3;
+                right: 0;
+                top: 11px;
+                border-radius: 10px;
+              "
+            >
+              <!--               <button class="cancelBtn b2" @click="goComponents('planList')">
+                  취소
+                </button> -->
+
+              <button class="cancelBtn b1" @click="savePlan">
+                <i
+                  class="fas fa-save"
+                  style="color: #0001ffd9; border: none"
+                ></i>
+                저장
+              </button>
+            </div>
+            <div id="map">
+              <div
+                style="width: 330px; height: 0px; border-radius: 3px"
+                ref="customOverlay"
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    background-color: white;
+                    color: black;
+                    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+                  "
+                >
+                  <v-list-item-title
+                    style="
+                      margin: 7px 0px 7px 9px;
+                      width: 80%;
+                      color: black;
+                      font-weight: 700;
+                    "
+                    >{{ markerInfo.place_name }}</v-list-item-title
+                  >
+                  <v-btn
+                    style="width: 10%; padding: 0%; color: black"
+                    @click="addPlan(markerInfo)"
+                  >
+                    <i class="fas fa-plus-circle"></i>
+                  </v-btn>
+                </div>
+                <div
+                  class="addr"
+                  style="
+                    background-color: white;
+                    padding: 2px 0px 0px 8px;
+                    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+                  "
+                >
+                  <h5
+                    style="
+                      text-overflow: ellipsis;
+                      overflow: hidden;
+                      white-space: nowrap;
+                      font-size: 10px;
+                      font-weight: 300;
+                      background-color: white;
+                    "
+                  >
+                    {{ markerInfo.address }}
+                  </h5>
+                  <a
+                    :href="markerInfo.url"
+                    target="_blank"
+                    style="
+                      text-overflow: ellipsis;
+                      overflow: hidden;
+                      white-space: nowrap;
+                      font-size: 10px;
+                      font-weight: 700;
+                      color: #1976d2a1;
+                    "
+                  >
+                    상세보기
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- grid2 종료지점 -->
+        </v-col>
+      </v-row>
+    </div>
+  </div>
 </template>
-
-<script>
-import 'vue3-carousel/dist/carousel.css'
-import {
-    Carousel,
-    Slide,
-    Pagination,
-    Navigation
-} from 'vue3-carousel';
-import {
-    ref
-} from 'vue';
-
+  
+  <script>
 export default {
-    components: {
-        Carousel,
-        Slide,
-        Pagination,
-        Navigation,
+  data() {
+    return {
+      modal: 0,
+      title: "",
+      intro: "",
+      start_date: "",
+      end_date: "",
+      curDate: "",
+      dayCnt: 0,
+      startDatePicker: 0,
+      endDatePicker: 0,
+      time: null,
+      timepicker: null,
+      timepickerTime: "00:00",
+      showDialog: false,
+      showSelected: false,
+      showSearch: true,
+      width: 0,
+      curCartegory: "AT4",
+      selectedItem: 0,
+      markers: [],
+      dateResult: [],
+      place: [],
+      positions: [],
+      radioList: [
+        {
+          key: "00",
+          value: "VTP200Y",
+          label: "공개",
+        },
+        {
+          key: "01",
+          value: "VTP403N",
+          label: "비공개",
+        },
+      ],
+      conceptList: [
+        {
+          key: "0",
+          value: "식도락",
+        },
+        {
+          key: "1",
+          value: "액티비티",
+        },
+        {
+          key: "2",
+          value: "관광명소",
+        },
+        {
+          key: "3",
+          value: "힐링",
+        },
+        {
+          key: "4",
+          value: "호캉스",
+        },
+        {
+          key: "5",
+          value: "산악여행",
+        },
+        {
+          key: "6",
+          value: "캠핑",
+        },
+      ],
+      placeSelect: [
+        "서울",
+        "대전",
+        "대구",
+        "부산",
+        "광주",
+        "울산",
+        "인천",
+        "경기도",
+        "강원도",
+        "경상남도",
+        "전라도",
+        "제주도",
+        "경상북도",
+        "충청도",
+      ],
+      mapOption: {
+        center: {
+          lat: 33.450701,
+          lng: 126.570667,
+        },
+        level: 8,
+      },
+      search: {
+        keyword: null,
+        pgn: null,
+        results: [],
+      },
+      markerInfo: {
+        place_name: "",
+        address: "",
+        url: "",
+        x: "",
+        y: "",
+      },
+      customOverlay: {},
+      planner: {
+        title: "",
+        intro: "",
+        start_date: "",
+        end_date: "",
+        nickname: "",
+        concept: "",
+        placeList: [],
+        planList: [],
+        visibility: "VTP200Y",
+      },
+      map: null,
+      plan: [],
+      plan2: [],
+    };
+  },
+  watch: {},
+  mounted() {
+    if (window.kakao && window.kakao.maps) {
+      // 카카오 객체가 있고, 카카오 맵 그릴 준비가 되어 있다면 맵 실행
+      this.loadMap();
+    } else {
+      // 없다면 카카오 스크립트 추가 후 맵 실행
+      this.loadScript();
+    }
+    console.log(this.$route.params.plan);
+    if (this.$route.params.plan != undefined) {
+      this.title = this.$route.params.plan.title;
+      this.intro = this.$route.params.plan.intro;
+      this.start_date = this.$route.params.plan.start_date;
+      this.end_date = this.$route.params.plan.end_date;
+      this.planner.concept = this.$route.params.plan.concept;
+      this.$route.params.plan.placeList.forEach((a) => {
+        this.place.push(a.place);
+      });
+    }
+    if (window.innerWidth < 600) {
+      this.showSearch = false;
+      let target = document.getElementsByClassName("categoryList");
+      target.style.width = "300px";
+    }
+    window.addEventListener("resize", this.handleResize);
+  },
+  methods: {
+    loadScript() {
+      const script = document.createElement("script");
+      script.src =
+        "//dapi.kakao.com/v2/maps/sdk.js?appkey=cf334cb575788ef58634b31f39108c2e&libraries=services&autoload=false";
+      script.onload = () => window.kakao.maps.load(this.loadMap); //script load가 끝난 뒤 지도 실행
+
+      document.head.appendChild(script);
     },
-    created() {
-        /* state가 있을경우(학생 추가가 아닌 학생 수정일 경우) */
-        this.id = history.state.id;
+    loadMap() {
+      // 지도를 담을 DOM 영역
+      const container = document.getElementById("map");
+      // 지도 초기 정보
+      const options = {
+        center: new window.kakao.maps.LatLng(33.450701, 126.570667),
+        level: 3,
+      };
+      this.map = new window.kakao.maps.Map(container, options);
+      /*       kakao.maps.event.addListener(this.map, "idle", this.searchCartegory);
+       */ this.searchCartegoryForLoadMap();
     },
-    data() {
-        return {
-            id: "",
-            imgUrl: undefined,
-            engDate: 0,
-            mathDate: 0,
-            engAdmissionDate: "",
-            mathAdmissionDate: "",
-            date: ref(new Date()),
-            consultingSummary: {
-                '친구들과의 관계': '좋음',
-                '평소 성격': '내향적',
-                '부모님과의 소통': '개선필요',
-                '집중력': '보통',
-                '과제성실도': '보통',
-                '요약': '내용없음',
-            },
-            imgUrlList: ['https://thumb.mtstarnews.com/06/2023/09/2023090409301201116_1.jpg/dims/optimize', 'https://thumb.mtstarnews.com/06/2023/09/2023090409301201116_3.jpg/dims/optimize', 'https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/4D62EEAQPO32OIH2EXFAVIIUQU.jpg', 'https://thumb.mtstarnews.com/06/2023/09/2023090409301201116_4.jpg/dims/optimize'],
+    searchPlaces(e) {
+      const keyword = e.target.value.trim();
+      if (keyword.length === 0) {
+        return;
+      }
+
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(keyword, (data, status, pgn) => {
+        this.search.keyword = keyword;
+        this.search.pgn = pgn;
+        this.search.results = data;
+      });
+    },
+    addPlan(rs) {
+      let obj = {};
+      obj.name = rs.place_name;
+      obj.memo = "";
+      obj.date = this.curDate;
+      obj.x = rs.x;
+      obj.y = rs.y;
+      this.planner.planList.push(obj);
+      this.sortDate1(this.planner.planList);
+    },
+    // localhost:8080/api/v1/planner/post
+    savePlan() {
+      this.planner.title = this.title;
+      this.planner.intro = this.intro;
+      this.planner.start_date = this.start_date;
+      this.planner.end_date = this.end_date;
+      this.planner.nickname = this.$store.state.userInfo.nickname;
+      this.place.forEach((a) => {
+        let obj = {
+          place: a,
+        };
+        this.planner.placeList.push(obj);
+      });
+      console.log(this.planner);
+    },
+    doneBtn() {
+      this.startDatePicker = 0;
+      this.endDatePicker = 0;
+      let date1 = new Date(this.start_date);
+      let date2 = new Date(this.end_date);
+      let dateDiff = date1 <= date2;
+      if (
+        this.start_date != "" &&
+        this.end_date != "" &&
+        this.title != "" &&
+        this.intro != "" &&
+        dateDiff
+      ) {
+        if (this.$route.params.plan != undefined) {
+          this.$route.params.plan.planList.forEach((a) => {
+            console.log(a);
+            this.planner.planList.push(a);
+          });
         }
+        this.modal = 0;
+        let curDate1 = new Date(this.start_date.substring(0, 10));
+        while (curDate1 <= new Date(this.end_date.substring(0, 10))) {
+          this.dateResult.push({
+            date: curDate1.toISOString().split("T")[0] + "T00:00",
+            view: 0,
+          });
+          curDate1.setDate(curDate1.getDate() + 1);
+        }
+        this.curDate = this.dateResult[0].date;
+      } else {
+        alert("잘못된 형식입니다(공백 또는 날짜 형식을 확인해주세요)");
+      }
     },
-    methods: {
-        engAdmissionDateSet(date) {
-            if (date == null) {
-                console.log(1);
-            } else {
-                this.engDate = 0;
-                let result = '';
-                let a = date.toLocaleDateString("ko-KR");
-                let b = a.split('.');
-                b.map((e, i) => {
-                    e = e.replace(/ /g, '');
-                    i < 2 ? result += `${e}-` : result += e;
-                })
-                this.engAdmissionDate = result;
-            }
+    setCenter(rs) {
+      // 이동할 위도 경도 위치를 생성합니다
+      let moveLatLon = new window.kakao.maps.LatLng(rs.y, rs.x);
 
-        },
-        mathAdmissionDateSet(date) {
-            if (date == null) {
-                console.log(1);
-            } else {
-                let result = '';
-                this.mathDate = 0;
-                let a = date.toLocaleDateString("ko-KR");
-                let b = a.split('.');
-                b.map((e, i) => {
-                    e = e.replace(/ /g, '');
-                    i < 2 ? result += `${e}-` : result += e;
-                })
-                this.mathAdmissionDate = result;
-            }
-
-        },
-        deleteImg(index) {
-            if (confirm('이미지를 삭제하시겠습니까?')) {
-                this.imgUrlList.splice(index, 1);
-            }
-        },
-        cancelUpdate() {
-            console.log(this.id);
-            this.$router.push({
-                name: "StudentDetailPage",
-                params: {
-                    id: this.id,
-                },
-            });
-        },
-        updateDetail() {
-            alert('수정완료 되었습니다');
-            this.$router.push({
-                name: "StudentDetailPage",
-                params: {
-                    id: this.id,
-                },
-            });
-        },
-        /* 업로드한 이미지를 보여주는 함수 */
-        uploadImg(event) {
-            if (this.imgUrl) URL.revokeObjectURL(this.imgUrl); // 기존 이미지 메모리 할당 해제
-            let img = event.target.files[0];
-            /* 이미지 파일이 아닐 시 거부 문구 출력 */
-            (img.type).includes('image') ? this.imgUrlList.push(URL.createObjectURL(img)) : alert('이미지 파일만 업로드 가능합니다');
-        },
+      // 지도 중심을 이동 시킵니다
+      this.map.setCenter(moveLatLon);
     },
-}
+    showDate(rs) {
+      rs.view = 1;
+      this.curDate = rs.date;
+    },
+    checkDay(rs) {
+      if (rs.date.substring(0, 10) == this.curDate.substring(0, 10)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    deletePlan(idx) {
+      this.planner.planList.splice(idx, 1);
+      console.log(this.planner);
+    },
+    doneTimePicker(rs) {
+      let date = rs.date.substring(0, 11);
+      rs.date = `${date}${this.timepickerTime}`;
+      this.timepicker = null;
+      this.timepickerTime = "00:00";
+      this.planner.planList = this.sortDate1(this.planner.planList);
+    },
+    getOrderDate(idx) {
+      return this.planner.planList[idx].date.substring(11, 16);
+    },
+    checkVisibility() {
+      if (this.planner.visibility == "VTP200Y") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    searchCartegoryForLoadMap() {
+      /*       this.customOverlay = new kakao.maps.CustomOverlay({});
+       */ let ps2 = new window.kakao.maps.services.Places(this.map);
+      ps2.categorySearch(this.curCartegory, this.placesSearchCB, {
+        useMapBounds: true,
+      });
+    },
+    searchCartegory() {
+      this.removeMarkers();
+      this.customOverlay.setMap(null);
+      this.positions.length = 0;
+      this.markers.length = 0;
+      let ps2 = new window.kakao.maps.services.Places(this.map);
+      ps2.categorySearch(this.curCartegory, this.placesSearchCB, {
+        useMapBounds: true,
+      });
+    },
+    placesSearchCB(data) {
+      console.log(data[0]);
+      for (let i = 0; i < data.length; i++) {
+        this.displayMarker(data[i]);
+      }
+      setTimeout(() => {
+        for (let i = 0; i < this.positions.length; i++) {
+          // 마커 이미지의 이미지 크기 입니다
+          var imageSize = new window.kakao.maps.Size(24, 35);
+          var imageSrc =
+            "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+
+          // 마커 이미지를 생성합니다
+          var markerImage = new window.kakao.maps.MarkerImage(
+            imageSrc,
+            imageSize
+          );
+
+          /*  var iwContent = '<div style="padding:5px;">hello world</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+            iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다 */
+
+          // 인포윈도우를 생성합니다
+          /* var infowindow = new kakao.maps.InfoWindow({
+            content: iwContent,
+            removable: iwRemoveable,
+          }); */
+          // 마커를 생성합니다
+          let marker = new window.kakao.maps.Marker({
+            map: this.map, // 마커를 표시할 지도
+            position: this.positions[i].latlng, // 마커를 표시할 위치
+            title: this.positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+            image: markerImage, // 마커 이미지
+          });
+
+          /* 마커에 클릭이벤트 등록 */
+          /* kakao.maps.event.addListener(marker, "click", () => {
+            this.displayPlaceInfo(this.positions[i]);
+          }); */
+          this.markers.push(marker);
+        }
+      }, 100);
+    },
+    displayMarker(place) {
+      let markerPosition = new window.kakao.maps.LatLng(place.y, place.x);
+      let obj = {
+        title: place.place_name,
+        latlng: markerPosition,
+        address: place.address_name,
+        x: place.x,
+        y: place.y,
+        url: place.place_url,
+      };
+      this.positions.push(obj);
+    },
+    removeMarkers() {
+      for (let i = 0; i < this.markers.length; i++) {
+        this.markers[i].setMap(null);
+      }
+    },
+    changeCartegory(car) {
+      this.customOverlay.setMap(null);
+      this.removeMarkers();
+      this.markers.length = 0;
+      this.curCartegory = car;
+      this.searchCartegory();
+    },
+    displayPlaceInfo(place) {
+      this.markerInfo.place_name = place.title;
+      this.markerInfo.address = place.address;
+      this.markerInfo.url = place.url;
+      this.markerInfo.x = place.x;
+      this.markerInfo.y = place.y;
+
+      /* var content = this.$refs.customOverlay;////
+      /* this.customOverlay = new kakao.maps.CustomOverlay({
+        position: place.latlng,
+        content: content,
+      }); */
+      // 커스텀 오버레이를 지도에 표시합니다
+      this.customOverlay.setMap(this.map);
+    },
+    sortDate1(list) {
+      const sorted_list = list.sort((a, b) => {
+        console.log(a);
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
+      return sorted_list;
+    },
+    goComponents(path) {
+      this.$router.push({ path: `/${path}` });
+    },
+    handleResize() {
+      if (window.innerWidth < 600) {
+        this.showSearch = false;
+      } else {
+        this.showSearch = true;
+      }
+    },
+  },
+};
 </script>
-
-<style scoped>
-@media(hover: hover) and (pointer: fine) {
-    .imgDiv label:hover {
-        background: #bab5ae;
-        color: white;
-    }
-
-    .updateBtn:hover {
-        background: rgb(3 24 54 / 88%);
-    }
-
-    .cancelBtn:hover {
-        background: #3e3e3e;
-    }
+  
+  <style scoped>
+#map {
+  flex: 1 1 auto;
+  height: 655px;
+}
+.maparea {
+  display: flex;
+  position: relative;
+}
+.maparea h4 {
+  margin: 0;
+}
+.maparea h5 {
+  margin: 0;
+}
+.searchbox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 600px;
+  z-index: 10000;
+  /*  background-color: #ffffffaa;
+    color: rgb(21, 20, 20); */
+  overflow-y: auto;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
 }
 
-.buttonSection {
-    text-align: center;
+.searchbox::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
 }
 
-.mainFrame {
-    display: flex;
-    flex-direction: column;
-    gap: 10px 0px;
-    width: 90%;
-    height: 80vh;
-    background: rgba(223, 209, 185, 0.2);
-    border-radius: 25px;
-    margin: auto;
-    margin-top: 10px;
-    z-index: 1;
-    overflow-y: auto;
+.v-text-field::lable {
+  color: aliceblue;
 }
 
-.imgDiv label {
-    cursor: pointer;
-    display: grid;
-    width: 175px;
-    height: 45px;
-    background: #F9F6F1;
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    border-radius: 25px;
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 18px;
-    color: rgba(0, 0, 0, 0.6);
-    place-content: center;
-    margin: auto;
+.place {
+  padding: 8px;
+}
+.plan {
+  top: 0;
+  left: 0;
+  background-color: #ffffffaa;
+  overflow-y: auto;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  margin: 5px;
 }
 
-.imgDiv input {
-    display: none;
+.plan h4 {
+  margin: 0;
+}
+.plan input {
+  margin: 3px;
 }
 
-.imgDiv {
-    text-align: center;
+.planner button {
+  margin: 3px;
 }
-
-@media(hover: hover) and (pointer: fine) {
-    .detailView button:hover {
-        background: rgb(3 24 54 / 88%);
-    }
+.planNumber {
+  border-radius: 50%;
+  border: none;
+  background: #7c30f5e6;
+  color: white;
+  width: 1vw;
+  height: 1vw;
+  -webkit-box-pack: center;
+  justify-content: center;
+  margin-top: 9px;
+  display: flex;
+  -webkit-box-align: center;
+  margin-left: 12px;
+  padding-bottom: 1px;
+  align-items: center;
 }
-
-.detailView1 img {
-    width: 40%;
+.planNumber h4 {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1vw;
+  text-align: center;
+  width: 1vw;
 }
-
-.detailView1 table {
-    border: 1px solid #444444;
-}
-
-.detailView1 td {
-    font-size: 0.8em;
-    border: 1px solid #444444;
-}
-
-.detailView1 {
-    padding: 15px;
-}
-
-.detailView1 textarea {
-    width: 100%;
-    height: 10vh;
-    border: 2px solid #bbbaba;
-    padding: 5px;
-}
-
-.detailView1 h4 {
-    font-size: 1.1em;
-    line-height: 1.5em;
-    color: #5e6244;
-    font-weight: 700;
-    margin: 1em 0 1em 0;
-}
-
-.detailView1 h5 {
-    font-size: 1.0em;
-    line-height: 1.4em;
-    color: #5e6244;
-    font-weight: 600;
-    margin: 1.5em 0 1.5em 0;
-}
-
-.detailView1 p {
-    margin: 0 0 0.2em 0;
-    font-size: 13px;
-}
-
-@media screen and (max-width: 767px) {
-
-    .table input {
-        width: 70px;
-    }
-
-    .detailView1 td {
-        font-size: 0.6em;
-    }
-}
-
-@media screen and (max-width: 1024px) {
-
-    .detailView1 table {}
-}
-
-.cancelBtn {
-    width: 151px;
-    height: 40px;
-    background: #828282;
-    border-radius: 15px;
-    color: white;
-    margin: 15px 0px;
-    margin-right: 10px;
-}
-
-.updateBtn {
-    width: 151px;
-    height: 40px;
-    background: rgba(46, 80, 128, 0.88);
-    border-radius: 15px;
-    color: white;
-    margin: 15px 0px;
-}
-
 .black-bg {
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    position: fixed;
-    padding: 20px;
-    z-index: 100;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 60000;
+  position: fixed;
+  padding: 20px;
 }
-
 .white-bg {
-    border-radius: 8px;
-    padding: 20px;
+  width: 70%;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+
+  flex-direction: column;
 }
 
-@media screen and (max-width: 767px) {
-    .cancelBtn {
-        width: 120px;
-    }
+.white-bg input {
+  width: 80%;
+  margin: 5px;
+  vertical-align: middle;
+}
 
-    .updateBtn {
-        width: 120px;
-    }
+.white-bg button {
+  width: 81%;
+  margin: 5px;
+  vertical-align: middle;
+}
+
+.dateResult h4 {
+  cursor: pointer;
+}
+
+.searchInput {
+  color: black;
+  font-size: small;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 5px;
+  height: 40px;
+  /*   background-color: rgb(196 202 196 / 75%);
+   */
+  margin-left: 20px;
+}
+
+.searchInput::placeholder {
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 12px;
+}
+.searchInput:focus {
+  outline: none;
+}
+
+.mx-auto::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
+}
+
+.cartegoryBtn {
+  position: absolute;
+  z-index: 2;
+  padding: 50px;
+  margin: 0px;
+  width: 50px;
+}
+.categoryList {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border-radius: 5px;
+  border: 1px solid #909090;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  background-color: white;
+  color: white;
+  overflow: hidden;
+  z-index: 2;
+  padding: 12px 15px;
+  width: fit-content;
+}
+.categoryElement {
+  float: left;
+  list-style: none;
+  width: 70px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+}
+.categoryElement i {
+  margin-right: 5px;
+}
+.cancelBtn {
+  font-family: "Inter";
+  border-radius: 8px;
+  width: 63px;
+  height: 36px;
+  font-size: 14px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+.b1 {
+  background-color: white;
+  color: black;
+  height: 43px;
+  border: solid 1px;
+}
+.b2 {
+  background-color: none;
+  color: black;
+  border: solid 1px black;
+}
+.searchIcon {
+  position: absolute;
+  /* background-color: rgb(196 202 196 / 72%); */
+  height: 40px;
+  width: 20px;
+  /* color: white; */
+  padding-top: 10px;
+  padding-left: 9px;
+  z-index: 3;
+  font-size: 13px;
 }
 </style>

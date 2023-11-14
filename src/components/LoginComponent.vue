@@ -1,27 +1,16 @@
 <template>
   <div>
-    <img src="../assets/background_logo.png" class="logoImg" />
-    <div class="maparea">
-      <div id="map"></div>
-    </div>
+    <img src="../assets/국민체육진흥공단.jpg" class="logoImg" />
 
     <div class="loginForm">
-      <input
-        placeholder="ID"
+      <button
         class="loginFormContent"
-        v-model="User.loginID"
-        @keyup.enter="Login()"
-      />
-
-      <input
-        type="password"
-        placeholder="PW"
-        class="loginFormContent"
-        @keyup.enter="Login()"
-        v-model="User.loginPW"
-      />
-
-      <button class="loginFormContent" @click="Login()">로그인</button>
+        disabled
+        style="background-color: #b5b588"
+      >
+        카카오맵으로 보는 개방학교 체육시설
+      </button>
+      <button class="loginFormContent" @click="Login()">시작하기</button>
     </div>
   </div>
 </template>
@@ -33,7 +22,6 @@ export default {
       User: {
         loginID: "",
         loginPW: "",
-        map: null,
       },
     };
   },
@@ -43,48 +31,12 @@ export default {
         path: "/mainpage",
       });
     },
-    loadScript() {
-      const script = document.createElement("script");
-      script.src =
-        "//dapi.kakao.com/v2/maps/sdk.js?appkey=cf334cb575788ef58634b31f39108c2e&libraries=services&autoload=false";
-      script.onload = () => window.kakao.maps.load(this.loadMap); //script load가 끝난 뒤 지도 실행
-
-      document.head.appendChild(script);
-    },
-    loadMap() {
-      // 지도를 담을 DOM 영역
-      const container = document.getElementById("map");
-      // 지도 초기 정보
-      const options = {
-        center: new window.kakao.maps.LatLng(33.450701, 126.570667),
-        level: 3,
-      };
-      this.map = new window.kakao.maps.Map(container, options);
-    },
   },
-  mounted() {
-    if (window.kakao && window.kakao.maps) {
-      // 카카오 객체가 있고, 카카오 맵 그릴 준비가 되어 있다면 맵 실행
-      this.loadMap();
-    } else {
-      // 없다면 카카오 스크립트 추가 후 맵 실행
-      this.loadScript();
-    }
-  },
+  mounted() {},
 };
 </script>
 
 <style scoped>
-#map {
-  flex: 1 1 auto;
-  height: 600px;
-  height: 655px;
-}
-.maparea {
-  margin-right: 30px;
-  margin-left: 20px;
-}
-
 body {
   padding: 0;
   margin: 0;
@@ -94,11 +46,12 @@ body {
   width: 100%;
   max-width: 300px;
   margin: auto;
+  margin-top: 40px;
   display: block;
 }
 
 .loginForm {
-  margin-top: 5px;
+  margin-top: 90px;
   width: 100%;
   text-align: center;
 }
@@ -127,7 +80,7 @@ body {
 
 .loginForm button {
   font-weight: 700;
-  font-size: 27px;
+  font-size: 22px;
   text-align: center;
   justify-content: center;
   color: #ffffff;
@@ -155,7 +108,7 @@ body {
   }
 
   .loginForm button {
-    font-size: 22px;
+    font-size: 14px;
     font-weight: 700;
   }
 
