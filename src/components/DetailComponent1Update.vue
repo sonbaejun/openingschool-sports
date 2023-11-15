@@ -1,5 +1,43 @@
 <template>
   <div>
+    <div class="black-bg" v-if="moreInfoModalView">
+      <div class="white-bg">
+        <p id="schoolName">{{ moreInfoModalContent.schoolName }}</p>
+        <p>{{ moreInfoModalContent.addr }}</p>
+        <p>코트 면적 : {{ moreInfoModalContent.cotvalue }}</p>
+        <p>제공장비 : {{ moreInfoModalContent.item }}</p>
+        <Table>
+          <tbody>
+            <tr>
+              <th>라커룸</th>
+              <th>샤워실</th>
+              <th>화장실</th>
+            </tr>
+            <tr>
+              <td>{{ moreInfoModalContent.locker }}개</td>
+              <td>{{ moreInfoModalContent.shower }}개</td>
+              <td>{{ moreInfoModalContent.toilet }}개</td>
+            </tr>
+          </tbody>
+        </Table>
+        <Table>
+          <tbody>
+            <tr>
+              <th v-for="(rs, i) in moreInfoModalContent.day" :key="i">
+                {{ rs }}
+              </th>
+            </tr>
+            <tr>
+              <td v-for="(rs, i) in moreInfoModalContent.dayTime" :key="i">
+                {{ rs }}
+              </td>
+            </tr>
+          </tbody>
+        </Table>
+
+        <button @click="moreInfoModalView = 0">닫기</button>
+      </div>
+    </div>
     <div
       style="
         width: 95%;
@@ -71,9 +109,9 @@
                               padding: 0%;
                               color: red;
                             "
-                            @click="deletePlan(i)"
+                            @click="moreInfo(rs)"
                             ><v-icon color="red" large>
-                              mdi-minus-circle
+                              mdi-file-search-outline
                             </v-icon></v-btn
                           >
                         </div>
@@ -91,95 +129,6 @@
         <v-col cols="12" sm="8" style="max-width: 100%">
           <!-- grid1 종료지점 -->
           <!-- grid2 시작지점 -->
-          <!-- <v-card
-            v-if="showSearch == true"
-            class="mx-auto"
-            style="
-              height: 655px;
-              width: 20%;
-              overflow-y: auto;
-              float: left;
-              min-width: 170px;
-            "
-            tile
-          >
-            <v-list dense style="padding: 0; overflow: hidden">
-              <div style="padding: 10px">
-                <div style="border: solid; border-radius: 10px">
-                  <div class="searchIcon">
-                    <v-icon color="indigo darken-4" large> mdi-magnify </v-icon>
-                  </div>
-                  <input
-                    class="searchInput"
-                    placeholder="SEARCH"
-                    @keyup.enter="searchPlaces"
-                  />
-                </div>
-              </div>
-              <div v-for="rs in search.results" :key="rs.place_name">
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-card elevation="5" outlined style="margin: 2px 0">
-                      <div
-                        style="
-                          display: flex;
-                          flex-direction: row;
-                          justify-content: flex-start;
-                          color: black;
-                        "
-                      >
-                        <v-list-item-title
-                          style="
-                            margin: 7px 0px 15px 9px;
-                            width: 80%;
-                            cursor: pointer;
-                            font-weight: 700;
-                          "
-                          @click="setCenter(rs)"
-                          >{{ rs.place_name }}</v-list-item-title
-                        >
-                        <v-btn
-                          style="width: 10%; padding: 0%"
-                          @click="addPlan(rs)"
-                        >
-                          <v-icon color="indigo darken-4" large>
-                            mdi-plus-circle
-                          </v-icon>
-                        </v-btn>
-                      </div>
-                      <div class="addr" style="margin: 3px 9px">
-                        <h5
-                          style="
-                            text-overflow: ellipsis;
-                            overflow: hidden;
-                            white-space: nowrap;
-                            font-size: 10px;
-                            font-weight: 300;
-                          "
-                        >
-                          {{ rs.address_name }}
-                        </h5>
-                        <a
-                          :href="rs.place_url"
-                          target="_blank"
-                          style="
-                            text-overflow: ellipsis;
-                            overflow: hidden;
-                            white-space: nowrap;
-                            font-size: 10px;
-                            font-weight: 700;
-                            color: #1976d2a1;
-                          "
-                        >
-                          상세보기
-                        </a>
-                      </div>
-                    </v-card>
-                  </v-list-item-content>
-                </v-list-item>
-              </div>
-            </v-list>
-          </v-card> -->
           <div class="maparea">
             <div class="categoryList">
               <div class="categoryElement" @click="changeCartegory('AT4')">
@@ -306,6 +255,22 @@ import dataSet from "../assets/data.js";
 export default {
   data() {
     return {
+      moreInfoModalView: 1,
+      moreInfoModalContent: {
+        addr: "",
+        city: "",
+        signgu: "",
+        cotvalue: "",
+        baseYear: "",
+        locker: 0,
+        shower: 0,
+        toilet: 0,
+        item: "",
+        time: [],
+        day: [],
+        dayTime: [],
+        schoolName: "",
+      },
       modal: 0,
       title: "",
       intro: "",
@@ -397,8 +362,34 @@ export default {
     window.addEventListener("resize", this.handleResize);
   },
   methods: {
+    moreInfo(rs) {
+      this.moreInfoModalContent.addr = rs.alsfc_addr;
+      this.moreInfoModalContent.city = rs.alsfc_ctprvn_nm;
+      this.moreInfoModalContent.signgu = rs.alsfc_signgu_nm;
+      this.moreInfoModalContent.cotvalue = rs.arby_cot_co_value;
+      this.moreInfoModalContent.baseYear = rs.base_year;
+      this.moreInfoModalContent.locker = rs.lockerrm_co;
+      this.moreInfoModalContent.shower = rs.shwerrm_co;
+      this.moreInfoModalContent.toilet = rs.toilet_co;
+      this.moreInfoModalContent.item = rs.oper_item_cn;
+      this.moreInfoModalContent.schoolName = rs.schul_nm;
+      this.moreInfoModalView = 1;
+
+      let arr = rs.oper_time_cn.split(" ").filter((value) => {
+        return value.length != 0;
+      });
+      this.moreInfoModalContent.time = [];
+      this.moreInfoModalContent.day = [];
+      this.moreInfoModalContent.dayTime = [];
+      arr.map((e) => {
+        this.moreInfoModalContent.time.push(e);
+        let a = e.split("일:");
+        this.moreInfoModalContent.day.push(`${a[0]}일`);
+        this.moreInfoModalContent.dayTime.push(a[1]);
+        console.log(this.moreInfoModalContent.day);
+      });
+    },
     setCenter2(rs) {
-      console.log(rs);
       var geocoder = new window.kakao.maps.services.Geocoder();
       geocoder.addressSearch(rs.alsfc_addr, (result, status) => {
         console.log(result);
@@ -485,10 +476,6 @@ export default {
       } else {
         return false;
       }
-    },
-    deletePlan(idx) {
-      this.planner.planList.splice(idx, 1);
-      console.log(this.planner);
     },
     doneTimePicker(rs) {
       let date = rs.date.substring(0, 11);
@@ -627,6 +614,50 @@ export default {
 </script>
   
   <style scoped>
+#schoolName {
+  font-size: 26px;
+  font-weight: 800;
+}
+.black-bg {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 60000;
+  position: fixed;
+  padding: 20px;
+}
+.white-bg {
+  width: 70%;
+  height: 70%;
+  justify-content: center;
+  margin: auto;
+  margin-top: 40px;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.white-bg table {
+  width: 40%;
+  border: 1px solid #444444;
+  margin: auto;
+}
+
+.white-bg td {
+  font-size: 0.7em;
+  border: 1px solid #444444;
+}
+
+.white-bg p {
+  margin: auto;
+}
+.moreInfoModal {
+  width: 100%;
+  height: 100%;
+  background-color: lightgray;
+}
 #map {
   flex: 1 1 auto;
   height: 655px;
@@ -730,12 +761,6 @@ export default {
 
 .white-bg input {
   width: 80%;
-  margin: 5px;
-  vertical-align: middle;
-}
-
-.white-bg button {
-  width: 81%;
   margin: 5px;
   vertical-align: middle;
 }
