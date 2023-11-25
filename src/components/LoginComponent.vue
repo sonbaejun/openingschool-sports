@@ -6,7 +6,7 @@
       <button
         class="loginFormContent"
         disabled
-        style="background-color: #b5b588"
+        style="background-color: #b5b588; cursor: default"
       >
         카카오맵으로 보는 개방학교 체육시설
       </button>
