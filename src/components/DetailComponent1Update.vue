@@ -470,12 +470,6 @@ export default {
         this.place.push(a.place);
       });
     }
-    if (window.innerWidth < 600) {
-      this.showSearch = false;
-      let target = document.getElementsByClassName("categoryList");
-      target.style.width = "300px";
-    }
-    window.addEventListener("resize", this.handleResize);
   },
   methods: {
     searchSchoolPlace() {
