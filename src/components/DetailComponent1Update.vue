@@ -34,8 +34,19 @@
             </tr>
           </tbody>
         </Table>
-
         <button @click="moreInfoModalView = 0">닫기</button>
+      </div>
+    </div>
+    <div class="black-bg" v-if="searchSchoolModalView">
+      <div class="white-bg">
+        <v-text-field
+          label="Place"
+          v-model="place"
+          style="margin-top: 0px; padding-top: 0px"
+          @click="showSelected = true"
+          readonly
+        ></v-text-field>
+        <button @click="searchSchoolModalView = 0">닫기</button>
       </div>
     </div>
     <div
@@ -74,7 +85,12 @@
                 <v-subheader style="color: black; margin-left: 20px"
                   >개방학교 검색</v-subheader
                 >
-                <button style="background-color: red">학교조건검색</button>
+                <button
+                  style="background-color: red"
+                  @click="searchSchoolModalView = 1"
+                >
+                  학교조건검색
+                </button>
               </div>
               <v-list dense style="padding: 0">
                 <div v-for="(rs, i) in initSchoolData" :key="i">
@@ -255,7 +271,24 @@ import dataSet from "../assets/data.js";
 export default {
   data() {
     return {
-      moreInfoModalView: 1,
+      placeSelect: [
+        "서울",
+        "대전",
+        "대구",
+        "부산",
+        "광주",
+        "울산",
+        "인천",
+        "경기도",
+        "강원도",
+        "경상남도",
+        "전라도",
+        "제주도",
+        "경상북도",
+        "충청도",
+      ],
+      moreInfoModalView: 0,
+      searchSchoolModalView: 0,
       moreInfoModalContent: {
         addr: "",
         city: "",
