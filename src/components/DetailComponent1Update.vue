@@ -34,13 +34,18 @@
             </tr>
           </tbody>
         </Table>
-        <button @click="moreInfoModalView = 0">닫기</button>
+        <button
+          @click="moreInfoModalView = 0"
+          style="background-color: #828282"
+        >
+          닫기
+        </button>
       </div>
     </div>
     <div class="black-bg" v-if="searchSchoolModalView">
-      <div class="white-bg">
+      <div class="white-bg" style="width: fit-content">
         <div class="toiletSearch">
-          <span>사용할 요일</span>
+          <span>요일</span>
           <div v-for="(rs, i) in yoil" :key="i">
             <input
               type="radio"
@@ -48,10 +53,9 @@
               :value="rs"
             />{{ rs }}
           </div>
-          {{ searchEngine.searchYoil }}
         </div>
+        <span>화장실</span>
         <div class="toiletSearch">
-          <span>화장실</span>
           <input
             type="radio"
             v-model="searchEngine.searchToilet"
@@ -62,10 +66,9 @@
             v-model="searchEngine.searchToilet"
             value="상관없음"
           />상관없음
-          {{ searchEngine.searchToilet }}
         </div>
+        <span>샤워실</span>
         <div class="toiletSearch">
-          <span>샤워실</span>
           <input
             type="radio"
             v-model="searchEngine.searchShower"
@@ -76,10 +79,9 @@
             v-model="searchEngine.searchShower"
             value="상관없음"
           />상관없음
-          {{ searchEngine.searchShower }}
         </div>
+        <span>라커룸</span>
         <div class="toiletSearch">
-          <span>라커룸</span>
           <input
             type="radio"
             v-model="searchEngine.searchLocker"
@@ -91,20 +93,18 @@
             value="상관없음"
             checked
           />상관없음
-          {{ searchEngine.searchLocker }}
         </div>
-        <button @click="searchSchool()">닫기</button>
+        <button @click="searchSchool()">검색</button>
       </div>
     </div>
     <div class="black-bg" v-if="searchPlaceModalView">
       <div class="white-bg">
-        <div class="toiletSearch">
+        <div class="toiletSearch" style="margin: auto">
           <div v-for="(rs, i) in placeSelect" :key="i">
             <input type="radio" v-model="schoolPlace" :value="rs" />{{ rs }}
           </div>
-          {{ schoolPlace }}
         </div>
-        <button @click="searchSchoolPlace()">닫기</button>
+        <button @click="searchSchoolPlace()">검색</button>
       </div>
     </div>
     <div
@@ -289,10 +289,11 @@
                   >
                   <v-btn
                     style="width: 10%; padding: 0%; color: black"
-                    @click="addPlan(markerInfo)"
+                    :href="markerInfo.url"
+                    target="_blank"
                   >
                     <v-icon color="indigo darken-4" large>
-                      mdi-plus-circle
+                      mdi-map-search-outline
                     </v-icon>
                   </v-btn>
                 </div>
@@ -316,20 +317,6 @@
                   >
                     {{ markerInfo.address }}
                   </h5>
-                  <a
-                    :href="markerInfo.url"
-                    target="_blank"
-                    style="
-                      text-overflow: ellipsis;
-                      overflow: hidden;
-                      white-space: nowrap;
-                      font-size: 10px;
-                      font-weight: 700;
-                      color: #1976d2a1;
-                    "
-                  >
-                    상세보기
-                  </a>
                 </div>
               </div>
             </div>
@@ -347,6 +334,7 @@ export default {
   data() {
     return {
       yoil: [
+        "상관없음",
         "월요일",
         "화요일",
         "수요일",
@@ -354,7 +342,6 @@ export default {
         "금요일",
         "토요일",
         "일요일",
-        "상관없음",
       ],
       searchPlaceModalView: 0,
       schoolPlace: "",
@@ -795,7 +782,6 @@ export default {
   padding: 20px;
 }
 .white-bg {
-  width: 70%;
   height: 70%;
   justify-content: center;
   margin: auto;
@@ -811,6 +797,7 @@ export default {
   width: 40%;
   border: 1px solid #444444;
   margin: auto;
+  border-radius: 4px;
 }
 
 .white-bg td {
@@ -918,7 +905,7 @@ export default {
   padding: 20px;
 }
 .white-bg {
-  width: 70%;
+  width: fit-content;
   background: white;
   border-radius: 8px;
   padding: 20px;
@@ -931,6 +918,18 @@ export default {
   width: 80%;
   margin: 5px;
   vertical-align: middle;
+}
+
+.white-bg button {
+  display: block;
+  margin-top: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  background-color: #03c75a;
+  -webkit-box-shadow: 0 2px 4px 0 rgba(3, 199, 90, 0.12);
+  box-shadow: 0 2px 4px 0 rgba(3, 199, 90, 0.12);
+  text-decoration: none;
+  color: #fff;
 }
 
 .dateResult h4 {
@@ -1027,5 +1026,9 @@ export default {
 
 .toiletSearch input {
   width: fit-content;
+}
+
+.toiletSearch {
+  margin-bottom: 15px;
 }
 </style>
