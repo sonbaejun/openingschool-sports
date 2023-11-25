@@ -143,18 +143,29 @@
                 <v-subheader style="color: black; margin-left: 20px"
                   >개방학교 검색</v-subheader
                 >
-                <button
-                  style="background-color: red; margin: 0px 10px"
+                <v-icon
+                  color="rgb(33 116 60)"
                   @click="searchPlaceModalView = 1"
+                  style="margin-left: 10px"
                 >
-                  지역검색
-                </button>
-                <button
-                  style="background-color: red"
+                  mdi-map-search
+                </v-icon>
+                <span
+                  @click="searchPlaceModalView = 1"
+                  style="cursor: pointer; color: rgb(33 116 60)"
+                  >지역</span
+                >
+                <v-icon
+                  color="rgb(107 87 58)"
                   @click="searchSchoolModalView = 1"
                 >
-                  학교조건검색
-                </button>
+                  mdi-magnify-plus-outline
+                </v-icon>
+                <span
+                  @click="searchSchoolModalView = 1"
+                  style="cursor: pointer; color: rgb(107 87 58)"
+                  >상세조건</span
+                >
               </div>
               <v-list dense style="padding: 0">
                 <div v-for="(rs, i) in initSchoolData" :key="i">
@@ -190,7 +201,7 @@
                               color: red;
                             "
                             @click="moreInfo(rs)"
-                            ><v-icon color="red" large>
+                            ><v-icon color="#94afc5" large>
                               mdi-file-search-outline
                             </v-icon></v-btn
                           >
@@ -220,24 +231,24 @@
                 <span style="color: black">주차장</span>
               </div>
               <div class="categoryElement" @click="changeCartegory('SW8')">
-                <v-icon color="red"> mdi-subway-variant </v-icon>
-                <span style="color: black">지하철</span>
+                <v-icon color="#53e066"> mdi-subway-variant </v-icon>
+                <span style="color: #53e066">지하철</span>
               </div>
               <div class="categoryElement" @click="changeCartegory('MT1')">
-                <v-icon color="red"> mdi-cart </v-icon>
-                <span style="color: black">마트</span>
+                <v-icon color="#e36d65"> mdi-cart </v-icon>
+                <span style="color: #e36d65">마트</span>
               </div>
               <div class="categoryElement" @click="changeCartegory('FD6')">
-                <v-icon color="red"> mdi-food </v-icon>
-                <span style="color: black">식당</span>
+                <v-icon color="#e8d4b7"> mdi-food </v-icon>
+                <span style="color: #e8d4b7">식당</span>
               </div>
               <div class="categoryElement" @click="changeCartegory('AD5')">
-                <v-icon color="red"> mdi-home </v-icon>
-                <span style="color: black">숙소</span>
+                <v-icon color="#ffa91e"> mdi-home </v-icon>
+                <span style="color: #ffa91e">숙소</span>
               </div>
               <div class="categoryElement" @click="changeCartegory('CE7')">
-                <v-icon color="red"> mdi-coffee </v-icon>
-                <span style="color: black">카페</span>
+                <v-icon color="#a17666"> mdi-coffee </v-icon>
+                <span style="color: #a17666">카페</span>
               </div>
             </div>
             <div
