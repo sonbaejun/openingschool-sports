@@ -46,7 +46,48 @@
           @click="showSelected = true"
           readonly
         ></v-text-field>
-        <button @click="searchSchoolModalView = 0">닫기</button>
+        <div class="toiletSearch">
+          <span>화장실</span>
+          <input type="radio" v-model="searchEngine.searchToilet" value="예" />
+          <input
+            type="radio"
+            v-model="searchEngine.searchToilet"
+            value="상관없음"
+          />
+          {{ searchEngine.searchToilet }}
+        </div>
+        <div class="toiletSearch">
+          <span>샤워실</span>
+          <input type="radio" v-model="searchEngine.searchShower" value="예" />
+          <input
+            type="radio"
+            v-model="searchEngine.searchShower"
+            value="상관없음"
+          />
+          {{ searchEngine.searchShower }}
+        </div>
+        <div class="toiletSearch">
+          <span>라커룸</span>
+          <input type="radio" v-model="searchEngine.searchLocker" value="예" />
+          <input
+            type="radio"
+            v-model="searchEngine.searchLocker"
+            value="상관없음"
+          />
+          {{ searchEngine.searchLocker }}
+        </div>
+        <button @click="searchSchool()">닫기</button>
+      </div>
+    </div>
+    <div class="black-bg" v-if="searchPlaceModalView">
+      <div class="white-bg">
+        <div class="toiletSearch">
+          <div v-for="(rs, i) in placeSelect" :key="i">
+            <input type="radio" v-model="schoolPlace" :value="rs" />{{ rs }}
+          </div>
+          {{ schoolPlace }}
+        </div>
+        <button @click="searchSchoolPlace()">닫기</button>
       </div>
     </div>
     <div
@@ -85,6 +126,12 @@
                 <v-subheader style="color: black; margin-left: 20px"
                   >개방학교 검색</v-subheader
                 >
+                <button
+                  style="background-color: red; margin: 0px 10px"
+                  @click="searchPlaceModalView = 1"
+                >
+                  지역검색
+                </button>
                 <button
                   style="background-color: red"
                   @click="searchSchoolModalView = 1"
@@ -271,21 +318,31 @@ import dataSet from "../assets/data.js";
 export default {
   data() {
     return {
+      searchPlaceModalView: 0,
+      schoolPlace: "",
+      searchEngine: {
+        searchToilet: "",
+        searchShower: "",
+        searchLocker: "",
+      },
       placeSelect: [
-        "서울",
-        "대전",
-        "대구",
-        "부산",
-        "광주",
-        "울산",
-        "인천",
+        "서울특별시",
+        "인천광역시",
+        "울산광역시",
+        "대전광역시",
+        "대구광역시",
+        "부산광역시",
+        "광주광역시",
         "경기도",
         "강원도",
+        "제주특별자치도",
+        "세종특별자치시",
+        "충청남도",
+        "충청북도",
         "경상남도",
-        "전라도",
-        "제주도",
         "경상북도",
-        "충청도",
+        "전라남도",
+        "전라북도",
       ],
       moreInfoModalView: 0,
       searchSchoolModalView: 0,
@@ -395,6 +452,39 @@ export default {
     window.addEventListener("resize", this.handleResize);
   },
   methods: {
+    searchSchoolPlace() {
+      this.initSchoolData = [];
+      this.schoolData.map((e) => {
+        e.alsfc_ctprvn_nm == this.schoolPlace
+          ? this.initSchoolData.push(e)
+          : null;
+      });
+      this.searchPlaceModalView != 0 ? (this.searchPlaceModalView = 0) : null;
+    },
+    searchSchool() {
+      this.searchSchoolPlace();
+      this.initSchoolData.map((e, index) => {
+        let checkSearch = true;
+        if (this.searchEngine.searchToilet == "예") {
+          e.toilet_co == 0 ? (checkSearch = false) : null;
+        }
+        if (this.searchEngine.searchShower == "예") {
+          e.shwerrm_co == 0 ? (checkSearch = false) : null;
+        }
+        if (this.searchEngine.searchLocker == "예") {
+          e.lockerrm_co == 0 ? (checkSearch = false) : null;
+        }
+        checkSearch == false ? this.initSchoolData.splice(index, 1) : null;
+      });
+      /* 중복값 제거 */
+      this.initSchoolData = this.initSchoolData.filter((obj, idx) => {
+        const isFirstFindIdx = this.initSchoolData.findIndex(
+          (obj2) => obj2.schul_nm === obj.schul_nm
+        );
+        return isFirstFindIdx === idx;
+      });
+      this.searchSchoolModalView = 0;
+    },
     moreInfo(rs) {
       this.moreInfoModalContent.addr = rs.alsfc_addr;
       this.moreInfoModalContent.city = rs.alsfc_ctprvn_nm;
@@ -646,7 +736,7 @@ export default {
 };
 </script>
   
-  <style scoped>
+<style scoped>
 #schoolName {
   font-size: 26px;
   font-weight: 800;
@@ -888,5 +978,9 @@ export default {
   padding-left: 9px;
   z-index: 3;
   font-size: 13px;
+}
+
+.toiletSearch input {
+  width: fit-content;
 }
 </style>
