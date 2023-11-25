@@ -39,41 +39,58 @@
     </div>
     <div class="black-bg" v-if="searchSchoolModalView">
       <div class="white-bg">
-        <v-text-field
-          label="Place"
-          v-model="place"
-          style="margin-top: 0px; padding-top: 0px"
-          @click="showSelected = true"
-          readonly
-        ></v-text-field>
+        <div class="toiletSearch">
+          <span>사용할 요일</span>
+          <div v-for="(rs, i) in yoil" :key="i">
+            <input
+              type="radio"
+              v-model="searchEngine.searchYoil"
+              :value="rs"
+            />{{ rs }}
+          </div>
+          {{ searchEngine.searchYoil }}
+        </div>
         <div class="toiletSearch">
           <span>화장실</span>
-          <input type="radio" v-model="searchEngine.searchToilet" value="예" />
+          <input
+            type="radio"
+            v-model="searchEngine.searchToilet"
+            value="예"
+          />예
           <input
             type="radio"
             v-model="searchEngine.searchToilet"
             value="상관없음"
-          />
+          />상관없음
           {{ searchEngine.searchToilet }}
         </div>
         <div class="toiletSearch">
           <span>샤워실</span>
-          <input type="radio" v-model="searchEngine.searchShower" value="예" />
+          <input
+            type="radio"
+            v-model="searchEngine.searchShower"
+            value="예"
+          />예
           <input
             type="radio"
             v-model="searchEngine.searchShower"
             value="상관없음"
-          />
+          />상관없음
           {{ searchEngine.searchShower }}
         </div>
         <div class="toiletSearch">
           <span>라커룸</span>
-          <input type="radio" v-model="searchEngine.searchLocker" value="예" />
+          <input
+            type="radio"
+            v-model="searchEngine.searchLocker"
+            value="예"
+          />예
           <input
             type="radio"
             v-model="searchEngine.searchLocker"
             value="상관없음"
-          />
+            checked
+          />상관없음
           {{ searchEngine.searchLocker }}
         </div>
         <button @click="searchSchool()">닫기</button>
@@ -318,12 +335,23 @@ import dataSet from "../assets/data.js";
 export default {
   data() {
     return {
+      yoil: [
+        "월요일",
+        "화요일",
+        "수요일",
+        "목요일",
+        "금요일",
+        "토요일",
+        "일요일",
+        "상관없음",
+      ],
       searchPlaceModalView: 0,
       schoolPlace: "",
       searchEngine: {
-        searchToilet: "",
-        searchShower: "",
-        searchLocker: "",
+        searchToilet: "상관없음",
+        searchShower: "상관없음",
+        searchLocker: "상관없음",
+        searchYoil: "상관없음",
       },
       placeSelect: [
         "서울특별시",
@@ -453,12 +481,14 @@ export default {
   },
   methods: {
     searchSchoolPlace() {
-      this.initSchoolData = [];
-      this.schoolData.map((e) => {
-        e.alsfc_ctprvn_nm == this.schoolPlace
-          ? this.initSchoolData.push(e)
-          : null;
-      });
+      if (this.schoolPlace != "") {
+        this.initSchoolData = [];
+        this.schoolData.map((e) => {
+          e.alsfc_ctprvn_nm == this.schoolPlace
+            ? this.initSchoolData.push(e)
+            : null;
+        });
+      }
       this.searchPlaceModalView != 0 ? (this.searchPlaceModalView = 0) : null;
     },
     searchSchool() {
@@ -473,6 +503,10 @@ export default {
         }
         if (this.searchEngine.searchLocker == "예") {
           e.lockerrm_co == 0 ? (checkSearch = false) : null;
+        }
+        if (this.searchEngine.searchYoil != "상관없음") {
+          let a = e.oper_time_cn.indexOf(this.searchEngine.searchYoil);
+          a == -1 ? (checkSearch = false) : null;
         }
         checkSearch == false ? this.initSchoolData.splice(index, 1) : null;
       });
